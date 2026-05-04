@@ -1,0 +1,48 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav align-items-center">
+
+@if (SignInManager.IsSignedIn(User))
+{
+    var email = User.Identity?.Name;
+    var username = email != null && email.Contains("@")
+        ? email.Split('@')[0]
+        : email;
+
+    <li class="nav-item me-2">
+        @if (User.IsInRole("Admin"))
+        {
+            <span class="badge bg-warning text-dark">ADMIN</span>
+        }
+    </li>
+
+    <li class="nav-item me-2">
+        <span class="nav-link text-light">Hello @username!</span>
+    </li>
+
+    <li class="nav-item">
+        <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+            <button type="submit" class="btn btn-link nav-link text-light">
+                Logout
+            </button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item me-2">
+        <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">
+            Login
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">
+            Register
+        </a>
+    </li>
+}
+
+</ul>

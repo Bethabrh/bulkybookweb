@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using bulkybookweb.Data;
 using bulkybookweb.Models;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 
 namespace bulkybookweb.Controllers
 {
+    [Authorize] // logged-in users only
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -15,42 +17,44 @@ namespace bulkybookweb.Controllers
             _db = db;
         }
 
-        // READ
+        // READ (any logged-in user)
         public IActionResult Index()
         {
             IEnumerable<Category> objCategoryList = _db.Categories.ToList();
             return View(objCategoryList);
         }
 
-        // CREATE (GET)
+        // 🔒 ONLY ADMIN CAN CREATE
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // CREATE (POST)
-  [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult Create(Category obj)
-{
-    if (obj.Name == obj.DisplayOrder.ToString())
-    {
-        ModelState.AddModelError("Name", "Display Order cannot match Name");
-    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public IActionResult Create(Category obj)
+        {
+            if (obj.Name == obj.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("Name", "Display Order cannot match Name");
+            }
 
-    if (ModelState.IsValid)
-    {
-        _db.Categories.Add(obj);
-        _db.SaveChanges();
-        
-        TempData["success"] = "Category created successfully";
-        return RedirectToAction("Index");
-    }
+            if (ModelState.IsValid)
+            {
+                _db.Categories.Add(obj);
+                _db.SaveChanges();
 
-    return View(obj);
-}
+                TempData["success"] = "Category created successfully";
+                return RedirectToAction("Index");
+            }
 
-        // EDIT (GET)
+            return View(obj);
+        }
+
+        // 🔒 ONLY ADMIN CAN EDIT
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int? id)
         {
             if (id == null || id == 0)
@@ -64,9 +68,9 @@ public IActionResult Create(Category obj)
             return View(categoryFromDb);
         }
 
-        // EDIT (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(Category obj)
         {
             if (obj.Name == obj.DisplayOrder.ToString())
@@ -79,7 +83,6 @@ public IActionResult Create(Category obj)
                 _db.Categories.Update(obj);
                 _db.SaveChanges();
 
-               
                 TempData["success"] = "Category updated successfully";
                 return RedirectToAction("Index");
             }
@@ -87,7 +90,8 @@ public IActionResult Create(Category obj)
             return View(obj);
         }
 
-        // DELETE (GET)
+        // 🔒 ONLY ADMIN CAN DELETE
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
@@ -101,9 +105,9 @@ public IActionResult Create(Category obj)
             return View(categoryFromDb);
         }
 
-        // DELETE (POST)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeletePOST(int? id)
         {
             var obj = _db.Categories.Find(id);
