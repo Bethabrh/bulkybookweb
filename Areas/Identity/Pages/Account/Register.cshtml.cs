@@ -1,5 +1,3 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
 using System.Collections.Generic;
@@ -18,8 +16,8 @@ namespace bulkybookweb.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
@@ -42,6 +40,7 @@ namespace bulkybookweb.Areas.Identity.Pages.Account
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
+        // ✅ SIMPLE REGISTER MODEL (Email + Password + ConfirmPassword)
         public class InputModel
         {
             [Required]
@@ -50,22 +49,22 @@ namespace bulkybookweb.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
+            [StringLength(100, MinimumLength = 6)]
             [Display(Name = "Password")]
             public string Password { get; set; }
 
+            [Required]
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Compare("Password", ErrorMessage = "Passwords do not match")]
             public string ConfirmPassword { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
+            ReturnUrl = returnUrl ?? Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            ReturnUrl = returnUrl;
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -75,26 +74,17 @@ namespace bulkybookweb.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new IdentityUser
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email
+                };
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = user.Id, code, returnUrl },
-                            protocol: Request.Scheme);
-
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
-                    }
+                    _logger.LogInformation("User created a new account.");
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
@@ -106,7 +96,6 @@ namespace bulkybookweb.Areas.Identity.Pages.Account
                 }
             }
 
-            ReturnUrl = returnUrl;
             return Page();
         }
     }

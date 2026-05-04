@@ -77,7 +77,6 @@ Areas/Identity/Pages/Account/
   ResetAuthenticator.cshtml.cs
   SetPassword.cshtml.cs
   ShowRecoveryCodes.cshtml.cs
-  TwoFactorAuthentication.cshtml.cs
  Register.cshtml.cs
  RegisterConfirmation.cshtml.cs
 Areas/Identity/Pages/Error.cshtml.cs
@@ -512,7 +511,6 @@ Areas/Identity/Pages/Account/
   ResetAuthenticator.cshtml
   SetPassword.cshtml
   ShowRecoveryCodes.cshtml
-  TwoFactorAuthentication.cshtml
   _Layout.cshtml
   _ManageNav.cshtml
   _StatusMessage.cshtml
@@ -567,7 +565,6 @@ Areas/Identity/Pages/Account/
   ResetAuthenticator.cshtml
   SetPassword.cshtml
   ShowRecoveryCodes.cshtml
-  TwoFactorAuthentication.cshtml
   _Layout.cshtml
   _ManageNav.cshtml
   _StatusMessage.cshtml

@@ -11,7 +11,7 @@
     <!-- ICONS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-    <!-- TOASTR CSS -->
+    <!-- TOASTR -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -35,6 +35,7 @@
 
     <div class="collapse navbar-collapse" id="navbarColor01">
 
+      <!-- LEFT MENU -->
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
           <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
@@ -45,10 +46,14 @@
         </li>
       </ul>
 
-      <form class="d-flex">
+      <!-- SEARCH -->
+      <form class="d-flex me-3">
         <input class="form-control me-2" type="search" placeholder="Search">
         <button class="btn btn-secondary" type="submit">Search</button>
       </form>
+
+      <!-- RIGHT SIDE LOGIN PARTIAL -->
+      <partial name="~/Views/Shared/_LoginPartial.cshtml" />
 
     </div>
   </div>
@@ -56,9 +61,7 @@
 </header>
 
 <main class="container flex-grow-1 mt-3">
-
     @RenderBody()
-
 </main>
 
 <footer class="footer bg-dark text-muted mt-auto py-3">
@@ -67,8 +70,6 @@
         <a asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>
 </footer>
-
-<!-- JS ORDER IS IMPORTANT -->
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
